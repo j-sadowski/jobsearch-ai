@@ -2,6 +2,8 @@ import argparse
 import logging
 from pathlib import Path
 
+from job_boards.linkedin import fetch_linkedin_posts
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
