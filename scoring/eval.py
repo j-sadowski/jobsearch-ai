@@ -25,5 +25,5 @@ def evaluate_scores(job_postings: Dict, scores: List[float]) -> None:
         job["score"] = score
         good_jobs.append(job)
     good_jobs = {"best_matches": good_jobs}
-    with open(RESULTS_DIR / f"good_jobs_{dt_string}.json") as f:
+    with open(RESULTS_DIR / f"good_jobs_{dt_string}.json", "w") as f:
         json.dump(good_jobs, f, indent=4)
