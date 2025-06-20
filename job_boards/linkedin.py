@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 
 from dotenv import load_dotenv
 from apify_client import ApifyClient
@@ -22,6 +22,8 @@ class JobInfo(BaseModel):
     work_type: str = Field("OnSite/Remote/Hybrid status")
     posted_at: str = Field("Posting date")
     salary: str = Field("Provided salary information")
+    score: Optional[float] = Field("Assigned score by LLM")
+    explanation: Optional[str] = Field("Short explanation as to why the score was given") 
 
 
 def fetch_linkedin_posts(job_title: str, city: str, limit=5) -> List[JobInfo]:
@@ -30,7 +32,7 @@ def fetch_linkedin_posts(job_title: str, city: str, limit=5) -> List[JobInfo]:
         "keywords": job_title,
         "limit": limit,
         "location": city,
-        "remote": "hybrid"
+        #"remote": "hybrid"
     }
     run = client.actor("apimaestro/linkedin-jobs-scraper-api").call(run_input=run_input)
     

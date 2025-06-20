@@ -19,7 +19,7 @@ def run_workflow(resume: str, job_title: str, city: str) -> None:
     2. Compare each job posting against the resume, apply a score and a reason
     3. Sort to top 5 jobs, then evaluate jobs that were not included and why
     """
-    job_postings = fetch_linkedin_posts(job_title, city)
+    job_postings = fetch_linkedin_posts(job_title, city, limit=10)
     scores = score_job_posts(resume, job_postings)
     evaluate_scores(scores, top_n=5)
 
