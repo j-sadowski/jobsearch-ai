@@ -21,7 +21,7 @@ def run_workflow(resume: str, job_title: str, city: str) -> None:
     """
     job_postings = fetch_linkedin_posts(job_title, city)
     scores = score_job_posts(resume, job_postings)
-    evaluate_scores(job_postings, scores)
+    evaluate_scores(scores, top_n=5)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="LLM based job searches given a prompt")
