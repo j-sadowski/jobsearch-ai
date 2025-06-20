@@ -2,7 +2,8 @@ import logging
 from typing import List
 
 from .oa_models import score_resume
-from ..job_boards.linkedin import JobInfo
+from datamodels.models import JobInfo
+
 
 logging.basicConfig(
     level=logging.INFO,

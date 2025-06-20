@@ -2,7 +2,9 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 from typing import List
-from ..job_boards.linkedin import JobInfo
+
+from datamodels.models import JobInfo
+
 
 
 CACHE_DIR = Path.cwd() / "data/cache"
@@ -14,7 +16,7 @@ def evaluate_scores(job_scores: List[JobInfo], top_n=5) -> None:
     """
     """
     dt_string = datetime.now(timezone.utc).strftime(format="%Y%m%d-%H%M%S")
-    sorted_jobs = sorted(job_scores, key=lambda x: x.score)
+    sorted_jobs = sorted(job_scores, key=lambda x: x.score, reverse=True)
     top_jobs = sorted_jobs[:top_n]
     bottom_jobs = sorted_jobs[top_n:]
     if bottom_jobs:
