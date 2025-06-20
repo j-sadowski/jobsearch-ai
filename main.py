@@ -20,6 +20,9 @@ def run_workflow(resume: str, job_title: str, city: str) -> None:
     3. Sort to top 5 jobs, then evaluate jobs that were not included and why
     """
     job_postings = fetch_linkedin_posts(job_title, city, limit=10)
+    if len(job_postings) == 0:
+        logger.error("No job posts were returned from fetch. Exiting.")
+        return
     scores = score_job_posts(resume, job_postings)
     evaluate_scores(scores, top_n=5)
 
@@ -27,7 +30,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="LLM based job searches given a prompt")
     parser.add_argument("-r", "--resume_path", type=Path, help="Path to local resume, currently only .txt format", required=True)
     parser.add_argument("-j", "--job_title", type=str, help="The job title to search for", required=True)
-    parser.add_argument("-c", "--city", type=str, default="Austin, TX")
+    parser.add_argument("-c", "--city", type=str, default="Austin")
     args = parser.parse_args()
 
     logger.info(f"Reading resume from {args.resume_path}")
