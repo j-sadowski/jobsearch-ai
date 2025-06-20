@@ -13,13 +13,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def run_workflow(resume: str, job_title: str, city: str) -> None:
+def run_workflow(resume: str, job_title: str, city: str, limit: int, hybrid:bool) -> None:
     """
     1. Fetch linkedin job postings that match job_title and city (or remote)
     2. Compare each job posting against the resume, apply a score and a reason
     3. Sort to top 5 jobs, then evaluate jobs that were not included and why
     """
-    job_postings = fetch_linkedin_posts(job_title, city, limit=10)
+    job_postings = fetch_linkedin_posts(job_title, city, limit=limit, hybrid=hybrid)
     if len(job_postings) == 0:
         logger.error("No job posts were returned from fetch. Exiting.")
         return
@@ -31,6 +31,8 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--resume_path", type=Path, help="Path to local resume, currently only .txt format", required=True)
     parser.add_argument("-j", "--job_title", type=str, help="The job title to search for", required=True)
     parser.add_argument("-c", "--city", type=str, default="Austin")
+    parser.add_argument("-l", "--limit", type=int, default=10)
+    parser.add_argument("-hyb", "--hybrid", action="store_true")
     args = parser.parse_args()
 
     logger.info(f"Reading resume from {args.resume_path}")
@@ -38,4 +40,4 @@ if __name__ == "__main__":
         resume = f.read()
     logger.info(f"Got job search details looking for {args.job_title} jobs in {args.city}")
 
-    run_workflow(resume, args.job_title, args.city)
+    run_workflow(resume, args.job_title, args.city, args.limit, args.hybrid)

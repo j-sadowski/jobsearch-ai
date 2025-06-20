@@ -11,14 +11,15 @@ load_dotenv()
 client = ApifyClient(token=os.getenv("APIFY_API_KEY"))
 
 
-def fetch_linkedin_posts(job_title: str, city: str, limit=5) -> List[JobInfo]:
+def fetch_linkedin_posts(job_title: str, city: str, limit=5, hybrid=False) -> List[JobInfo]:
     run_input = {
         "date_posted": "week", # only show results from last week
         "keywords": job_title,
         "limit": limit,
         "location": city,
-        #"remote": "hybrid"
     }
+    if hybrid:
+        run_input["remote"] = "hybrid"
     run = client.actor("apimaestro/linkedin-jobs-scraper-api").call(run_input=run_input)
     
     jobs = []
