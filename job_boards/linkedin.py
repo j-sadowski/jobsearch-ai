@@ -4,7 +4,7 @@ from pathlib import Path
 
 def fetch_linkedin_posts(job_title: str, city: str):
 
-    with open(Path.cwd() / "job_boards/dummy_posts.json") as f:
+    with open(Path.cwd() / "data/dummy_posts.json") as f:
         job_posts = json.load(f)
 
     return job_posts

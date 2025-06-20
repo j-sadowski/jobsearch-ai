@@ -3,9 +3,9 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
-CACHE_DIR = Path.cwd() / "cache"
+CACHE_DIR = Path.cwd() / "data/cache"
 CACHE_DIR.mkdir(exist_ok=True)
-RESULTS_DIR = Path.cwd() / "results"
+RESULTS_DIR = Path.cwd() / "data/results"
 RESULTS_DIR.mkdir(exist_ok=True)
 
 def evaluate_scores(job_postings: Dict, scores: List[float]) -> None:
