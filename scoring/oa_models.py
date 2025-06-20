@@ -18,7 +18,7 @@ model = "gpt-4.1-nano-2025-04-14" # Smallest, cheapest for prototyping
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
-
+# TODO: Move pydtantic models out of here.
 class ResumeDigest(BaseModel):
     """First LLM call: Summarize the resume"""
     summary: str = Field(description="Summary of the input resume")
@@ -27,6 +27,7 @@ class JDScore(BaseModel):
     """Second LLM call score the JD against the resume"""
     score: float = Field(description="Resume suitability score")
     explanation: str = Field(description="Explanation of suitability score")
+
 
 def resume_summarizer(resume: str) -> ResumeDigest:
     """
@@ -73,16 +74,19 @@ def score_resume(resume_text: str, job_description: str) -> JDScore:
         "Score this resume against the job description (0-10):"
     )
 
-    response = client.beta.chat.completions.parse(
-        model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt}
-        ],
-        temperature=0.0,
-        response_format=JDScore
-    )
-    logger.info("Score complete!")
-    result = response.choices[0].message.parsed
-    print(result)
+    try:
+        response = client.beta.chat.completions.parse(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            temperature=0.0,
+            response_format=JDScore
+        )
+        logger.info("Score complete!")
+        result = response.choices[0].message.parsed
+    except Exception as e:
+        logger.error(f"Failed to score resume: {e}")
+        result = JDScore(score=-1, explanation="Comparison failed")
     return result
