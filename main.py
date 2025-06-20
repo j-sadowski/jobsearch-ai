@@ -3,6 +3,8 @@ import logging
 from pathlib import Path
 
 from job_boards.linkedin import fetch_linkedin_posts
+from scoring.job_posts import score_job_posts
+from scoring.eval import evaluate_scores
 
 logging.basicConfig(
     level=logging.INFO,
@@ -11,7 +13,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def run_worfklow(resume: str, job_title: str, city: str) -> None:
+def run_workflow(resume: str, job_title: str, city: str) -> None:
     """
     1. Fetch linkedin job postings that match job_title and city (or remote)
     2. Compare each job posting against the resume, apply a score and a reason
@@ -28,7 +30,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--city", type=str, default="Austin, TX")
     args = parser.parse_args()
 
-    logger.info(f"Reading resume from {args._resume_path}")
+    logger.info(f"Reading resume from {args.resume_path}")
     with open(args.resume_path) as f:
         resume = f.read()
     logger.info(f"Got job search details looking for {args.job_title} jobs in {args.city}")
