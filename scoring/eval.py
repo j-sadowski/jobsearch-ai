@@ -18,6 +18,6 @@ def evaluate_scores(job_scores: List[JobInfo], top_n=5) -> None:
 
     for job in sorted_jobs[:top_n]:
         print(job.company, job.job_title, job.score, job.explanation)
-    good_jobs = {"query_date": dt_string, "jobs": [x.model_dump() for x in sorted_jobs]}
+    jobs_d = {"query_date": dt_string, "jobs": [x.model_dump() for x in sorted_jobs]}
     with open(CACHE_DIR / f"jobs_{dt_string}.json", "w") as f:
-        json.dump(good_jobs, f, indent=4)
+        json.dump(jobs_d, f, indent=4)
