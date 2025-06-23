@@ -12,15 +12,22 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def extract_job_score(job_score):
-    return job_score
-
-def score_job_posts(resume: str, job_postings: List[JobInfo]) -> List[float]:
+def score_job_posts(resume: str, job_postings: List[JobInfo]) -> List[JobInfo]:
     """
-    There is a 1:1 matching of score against N job_postings.
-    Errored jobs return a value of -1.
-    """
+    Scores a list of job postings against a candidate's resume using an LLM.
 
+    For each job posting, this function evaluates how well the provided resume matches
+    the job description by calling the score_resume function. It updates each JobInfo object
+    with a suitability score and an explanation. If an error occurs during scoring, the job's
+    score is set to -1.
+
+    Args:
+        resume (str): The plain text content of the candidate's resume.
+        job_postings (List[JobInfo]): A list of JobInfo objects representing job postings to score.
+
+    Returns:
+        List[JobInfo]: The input list of JobInfo objects, each updated with a score and explanation.
+    """
     scores = []
     for job in job_postings:
         job_score = score_resume(resume, job.description)
