@@ -2,6 +2,11 @@
 
 `jobsearch-ai` is a command-line tool that uses large language models (LLMs) to automate and enhance the job search process. It fetches job postings from LinkedIn, scores them against your resume using AI, and helps you identify the best matches.
 
+
+## Application Workflow
+
+![Diagram of how the application calls various components](./workflow.png)
+
 ## Features
 
 - Fetches job postings from LinkedIn based on job title and city.
