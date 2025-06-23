@@ -18,6 +18,24 @@ def run_workflow(resume: str, job_title: str, city: str, limit: int, hybrid:bool
     1. Fetch linkedin job postings that match job_title and city (or remote)
     2. Compare each job posting against the resume, apply a score and a reason
     3. Sort to top 5 jobs, then evaluate jobs that were not included and why
+
+    Executes the main workflow for job searching and evaluation.
+
+    Steps:
+        1. Fetches LinkedIn job postings that match the specified job title and city.
+           If 'hybrid' is True, only hybrid jobs in the search.
+        2. Compares each job posting against the provided resume, assigning a score and reason.
+        3. Sorts the job postings by score, prints the top 5, saves all to cache
+
+    Args:
+        resume (str): The contents of the user's resume in plain text.
+        job_title (str): The job title to search for.
+        city (str): The city to search for jobs in. Only the city. Not city, state.
+        limit (int): The maximum number of job postings to fetch.
+        hybrid (bool): Whether to include hybrid/remote jobs in the search.
+
+    Returns:
+        None
     """
     job_postings = fetch_linkedin_posts(job_title, city, limit=limit, hybrid=hybrid)
     if len(job_postings) == 0:

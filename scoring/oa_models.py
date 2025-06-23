@@ -31,10 +31,20 @@ class JDScore(BaseModel):
 
 def resume_summarizer(resume: str) -> ResumeDigest:
     """
-    Digest resume to keep the important bits for the for loop analysis
+    Summarize a resume to extract key keep the important bits for the for loop analysis
 
+    This function sends the provided resume text to an LLM, which returns a concise summary
+    highlighting the most important keywords and phrases. The summary is intended to capture
+    the core qualifications, skills, and experience from the resume for downstream analysis.
+    
     Leaving this in for reference, but it makes the results worse. Probably needs to be replaced with
     a tokenization step or something.
+
+    Args:
+        resume (str): The plain text content of the candidate's resume.
+
+    Returns:
+        ResumeDigest: An object containing the summarized resume.
     """
     logger.info("Starting resume summarizer")
     
@@ -58,7 +68,21 @@ def resume_summarizer(resume: str) -> ResumeDigest:
 
 def score_resume(resume_text: str, job_description: str) -> JDScore:
     """
+    Evaluates the suitability of a resume for a specific job description.
+
+    Sends both the resume and the job description to LLM, which returns a numerical
+    score (0-10) indicating how well the resume matches the job requirements, along with a brief explanation.
+    A score of 10 means a perfect fit; 0 means no fit. The evaluation considers skills, experience,
+    qualifications, and alignment with the role's responsibilities.
+
+    Args:
+        resume_text (str): The plain text content of the candidate's resume.
+        job_description (str): The plain text content of the job description.
+
+    Returns:
+        JDScore: An object containing the suitability score and an explanation.
     """
+
     logger.info("Starting resume scorer")
     system_prompt = (
         "You are an expert resume evaluator. Your task is to score a resume's suitability "

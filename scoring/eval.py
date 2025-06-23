@@ -12,6 +12,18 @@ CACHE_DIR.mkdir(exist_ok=True)
 
 def evaluate_scores(job_scores: List[JobInfo], top_n=5) -> None:
     """
+    Evaluates and displays the top job matches based on their suitability scores.
+
+    This function sorts the provided list of JobInfo objects by their score in descending order,
+    prints the top N jobs (including company, job title, score, and explanation), and saves all
+    scored jobs to a timestamped JSON cache file for later review.
+
+    Args:
+        job_scores (List[JobInfo]): A list of JobInfo objects, each with a score and explanation.
+        top_n (int, optional): The number of top jobs to display. Defaults to 5.
+
+    Returns:
+        None
     """
     dt_string = datetime.now(timezone.utc).strftime(format="%Y%m%d-%H%M%S")
     sorted_jobs = sorted(job_scores, key=lambda x: x.score, reverse=True)
