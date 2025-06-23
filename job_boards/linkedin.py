@@ -40,16 +40,18 @@ def fetch_linkedin_posts(job_title: str, city: str, limit=5, hybrid=False) -> Li
     
     jobs = []
     for item in client.dataset(run["defaultDatasetId"]).iterate_items():
-        jobs.append(JobInfo(
-            company=item["company"],
-            company_url=item["company_url"],
-            description=item["description"],
-            is_verified=item["is_verified"],
-            job_title=item["job_title"],
-            job_url=item["job_url"],
-            location=item["location"],
-            posted_at=item["posted_at"],
-            salary=item["salary"],
-            work_type=item["work_type"]
-        ))
+        jobs.append(
+            JobInfo(
+                company=item.get("company", "Not Specified"),
+                company_url=item.get("company_url", "Not Specified"),
+                description=item.get("description", "Not Specified"),
+                is_verified=item.get("is_verified", False),
+                job_title=item.get("job_title", "Not Specified"),
+                job_url=item.get("job_url", "Not Specified"),
+                location=item.get("location", "Not Specified"),
+                posted_at=item.get("posted_at", "Not Specified"),
+                salary=item.get("salary", "Not Specified"),
+                work_type=item.get("work_type", "Not Specified")\
+            )
+        )
     return jobs
