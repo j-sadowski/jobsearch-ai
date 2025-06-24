@@ -1,4 +1,5 @@
 import logging
+from typing import List
 import os
 
 from dotenv import load_dotenv
@@ -83,7 +84,6 @@ def score_resume(resume_text: str, job_description: str) -> JDScore:
         JDScore: An object containing the suitability score and an explanation.
     """
 
-    logger.info("Starting resume scorer")
     system_prompt = (
         "You are an expert resume evaluator. Your task is to score a resume's suitability "
         "for a given job description on a scale of 0 to 10. "
@@ -108,9 +108,46 @@ def score_resume(resume_text: str, job_description: str) -> JDScore:
             temperature=0.0,
             response_format=JDScore
         )
-        logger.info("Score complete!")
+        logger.info("Resume scoring successful!")
         result = response.choices[0].message.parsed
     except Exception as e:
         logger.error(f"Failed to score resume: {e}")
         result = JDScore(score=-1, explanation="Comparison failed")
+    return result
+
+
+def summarize_gaps(explanations: List[str]) -> str:
+    logger.info("Starting gap summarizer")
+    
+    explanations = [f"Rationale {i}: {x}" for i, x in enumerate(explanations)]    
+
+    system_prompt = (
+        "You are an expert at identifying and articulating missing skills and experiences."
+        "Your task is to analyze a list of rationales, each describing aspects of a candidate's profile in relation to a job."
+        "From these rationales, **extract only the specific skills or experiences that are identified as missing or could be improved upon**"
+        "for a higher suitability score. Provide your response as a concise list of bullet points,"
+        "with each point clearly stating a missing skill or experience."
+        "Do not include any introductory or concluding remarks, just the bullet points."
+    )
+
+    user_prompt = (
+        f"Analyze the following rationales to identify missing skills or experiences:\n"
+        f"{'\n--\n'.join(explanations)}\n--\n\n"
+        "List the identified gaps:"
+    )
+    
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            temperature=0.0
+        )
+        logger.info("Gap summarizaton complete")
+        result = response.choices[0].message.content
+    except Exception as e:
+        logger.error(f"Failed to identify gaps resume: {e}")
+        result = f"Unable to analyze gaps: {e}"
     return result
