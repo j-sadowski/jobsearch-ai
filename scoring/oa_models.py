@@ -117,6 +117,21 @@ def score_resume(resume_text: str, job_description: str) -> JDScore:
 
 
 def summarize_gaps(explanations: List[str]) -> str:
+    """
+    Analyzes a list of eplanations to extract missing skills or experiences.
+
+    This function sends the provided list of explanations to an LLM, which returns
+    a concise bullet-point list of specific skills or experiences that are identified as missing
+    or could be improved upon for a higher suitability score. The output is intended to help
+    candidates understand what areas of their resume could be strengthened to better match job requirements.
+
+    Args:
+        explanations (List[str]): List of rationale strings, each describing aspects of a candidate's profile
+                                  in relation to a job description.
+
+    Returns:
+        str: A bullet-point list of missing skills or experiences, as identified by the LLM.
+    """
     logger.info("Starting gap summarizer")
     
     explanations = [f"Rationale {i}: {x}" for i, x in enumerate(explanations)]    

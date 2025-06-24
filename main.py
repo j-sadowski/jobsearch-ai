@@ -19,19 +19,48 @@ logger = logging.getLogger(__name__)
 CACHE_DIR = Path.cwd() / "data/cache"
 CACHE_DIR.mkdir(exist_ok=True)
 
-def display_output(scores: List[JobInfo], gap_summary: str, top_n=5) -> None:
-    dt_string = datetime.now(timezone.utc).strftime(format="%Y%m%d-%H%M%S")
-    sorted_jobs = sorted(scores, key=lambda x: x.score, reverse=True)
+def cache_data(scores: List[JobInfo], gap_summary: str) -> None:
+    """
+    Saves all data to a cache file.
+    Args:
+        scores (List[JobInfo]): List of JobInfo objects containing job details and scores.
+        gap_summary (str): Summary of areas where the resume could be improved.
+    Side Effects:
+        - Saves all job scores and details to a timestamped JSON file in the cache directory.
 
+    """
+    dt_string = datetime.now(timezone.utc).strftime(format="%Y%m%d-%H%M%S")
+    outfile = CACHE_DIR / f"jobs_{dt_string}.json"
+    logger.info(f"Saving data to {outfile}")
+    sorted_jobs = sorted(scores, key=lambda x: x.score, reverse=True)
+    jobs_d = {
+        "query_date": dt_string,
+        "jobs": [x.model_dump() for x in sorted_jobs],
+        "areas_of_improvement": gap_summary
+    }
+    with open(outfile, "w") as f:
+        json.dump(jobs_d, f, indent=4)
+
+
+def display_output(scores: List[JobInfo], gap_summary: str, top_n=5) -> None:
+    """
+    Displays the top job matches and areas for improvement
+
+    Args:
+        scores (List[JobInfo]): List of JobInfo objects containing job details and scores.
+        gap_summary (str): Summary of areas where the resume could be improved.
+        top_n (int, optional): Number of top jobs to display. Defaults to 5.
+
+    Side Effects:
+        - Prints the top N job matches and their explanations to the console.
+        - Prints the gap summary to the console.
+    """
+    sorted_jobs = sorted(scores, key=lambda x: x.score, reverse=True)
     for job in sorted_jobs[:top_n]:
         print("")
         print(job.company)
         print(f"{job.job_title}, score: {job.score}")
         print(job.explanation)
-    jobs_d = {"query_date": dt_string, "jobs": [x.model_dump() for x in sorted_jobs]}
-    with open(CACHE_DIR / f"jobs_{dt_string}.json", "w") as f:
-        json.dump(jobs_d, f, indent=4)
-
     print("")
     print("Areas of improvement")
     print(gap_summary)
@@ -39,10 +68,6 @@ def display_output(scores: List[JobInfo], gap_summary: str, top_n=5) -> None:
 
 def run_workflow(resume: str, job_title: str, city: str, limit: int, hybrid:bool) -> None:
     """
-    1. Fetch linkedin job postings that match job_title and city (or remote)
-    2. Compare each job posting against the resume, apply a score and a reason
-    3. Sort to top 5 jobs, then evaluate jobs that were not included and why
-
     Executes the main workflow for job searching and evaluation.
 
     Steps:
@@ -69,7 +94,8 @@ def run_workflow(resume: str, job_title: str, city: str, limit: int, hybrid:bool
     scores = score_job_posts(resume, job_postings)
     gap_summary = identify_resume_gaps(scores)
     display_output(scores, gap_summary, top_n=5)
-    
+    cache_data(scores, gap_summary)
+    logger.info("Script complete")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="LLM based job searches given a prompt")
