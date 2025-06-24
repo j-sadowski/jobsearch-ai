@@ -12,8 +12,10 @@
 - Fetches job postings from LinkedIn based on job title and city.
 - Uses LLMs to evaluate and score how well your resume matches each job posting.
 - Provides explanations for each score to help you understand your fit.
+- Summarizes missing skills or experiences to help you improve your resume.
 - Supports filtering for hybrid/remote jobs.
 - Outputs the top job matches for your review.
+- Saves all results and improvement suggestions to a cache file.
 
 ## Requirements
 
@@ -68,10 +70,11 @@ jobsearch-ai/
 │   └── linkedin.py        # LinkedIn job fetching logic
 ├── scoring/
 │   ├── job_posts.py       # Job scoring logic
-│   ├── oa_models.py       # LLM interaction and scoring models
-│   └── eval.py            # Evaluation and ranking logic
+│   └── oa_models.py       # LLM interaction and scoring models
 ├── datamodels/
 │   └── models.py          # Data models for job postings
+├── data/
+│   └── cache/             # Cached results (JSON files)
 ├── requirements.txt
 └── README.md
 ```

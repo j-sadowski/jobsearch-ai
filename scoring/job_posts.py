@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from .oa_models import score_resume
+from .oa_models import score_resume, summarize_gaps
 from datamodels.models import JobInfo
 
 
@@ -28,10 +28,20 @@ def score_job_posts(resume: str, job_postings: List[JobInfo]) -> List[JobInfo]:
     Returns:
         List[JobInfo]: The input list of JobInfo objects, each updated with a score and explanation.
     """
+    logger.info(f"Starting resume scorer. Submitting {len(job_postings)} jobs")
     scores = []
-    for job in job_postings:
+    for i, job in enumerate(job_postings):
+        logger.info(f"Submitting job {i} of {len(job_postings)}")
         job_score = score_resume(resume, job.description)
         job.score = job_score.score
         job.explanation = job_score.explanation
         scores.append(job)
     return scores
+
+def identify_resume_gaps(scores: List[JobInfo], score_threshold=7) -> str:
+    explanations = [x.explanation for x in scores if x.score > score_threshold]
+    if len(explanations) == 0:
+        logger.info(f"No jobs scored above {score_threshold=}")
+        return f"Unable to conduct gap analysis, no jobs scored above {score_threshold}"
+    logger.info(f"Submitting {len(explanations)} jobs above {score_threshold} to gap analysis")
+    return summarize_gaps(explanations)
