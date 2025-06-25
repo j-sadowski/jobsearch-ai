@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import List
 
@@ -7,6 +8,8 @@ from apify_client import ApifyClient
 from datamodels.models import JobInfo
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 client = ApifyClient(token=os.getenv("APIFY_API_KEY"))
 
@@ -40,18 +43,22 @@ def fetch_linkedin_posts(job_title: str, city: str, limit=5, hybrid=False) -> Li
     
     jobs = []
     for item in client.dataset(run["defaultDatasetId"]).iterate_items():
-        jobs.append(
-            JobInfo(
-                company=item.get("company", "Not Specified"),
-                company_url=item.get("company_url", "Not Specified"),
-                description=item.get("description", "Not Specified"),
-                is_verified=item.get("is_verified", False),
-                job_title=item.get("job_title", "Not Specified"),
-                job_url=item.get("job_url", "Not Specified"),
-                location=item.get("location", "Not Specified"),
-                posted_at=item.get("posted_at", "Not Specified"),
-                salary=item.get("salary", "Not Specified"),
-                work_type=item.get("work_type", "Not Specified")\
+        try:
+            jobs.append(
+                JobInfo(
+                    company=item.get("company", "Not Specified"),
+                    company_url=item.get("company_url", "Not Specified"),
+                    description=item.get("description", "Not Specified"),
+                    is_verified=item.get("is_verified", False),
+                    job_title=item.get("job_title", "Not Specified"),
+                    job_url=item.get("job_url", "Not Specified"),
+                    location=item.get("location", "Not Specified"),
+                    posted_at=item.get("posted_at", "Not Specified"),
+                    salary=item.get("salary", "Not Specified"),
+                    work_type=item.get("work_type", "Not Specified")\
+                )
             )
-        )
+        except Exception as e:
+            logger.error(f"Unable to unpack returned item: {e}")
+            continue
     return jobs
