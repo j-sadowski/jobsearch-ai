@@ -1,4 +1,4 @@
-# jobsearch-ai# jobsearch-ai
+# jobsearch-ai
 
 `jobsearch-ai` is a command-line tool that uses large language models (LLMs) to automate and enhance the job search process. It fetches job postings from LinkedIn, scores them against your resume using AI, and helps you identify the best matches.
 
@@ -28,7 +28,7 @@
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/jobsearch-ai.git
+    git clone https://github.com/j-sadowski/jobsearch-ai.git
     cd jobsearch-ai
     ```
 
