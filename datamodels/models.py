@@ -2,6 +2,10 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
+class SearchExtract(BaseModel):
+    is_valid: bool = Field(description="Whether this text is describing search terms for a job board (keywords, city, limit on number, hybrid status)")
+    confidence: float = Field(description="Confidence score that this is a valid search query")
+
 class WorkflowReqs(BaseModel):
     resume: Optional[str] = Field(description="The plain text of a resume")
     keywords: str = Field(description="The keywords to search in the job title and job description")

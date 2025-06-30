@@ -7,7 +7,7 @@ from typing import Dict, List
 
 from datamodels.models import JobInfo
 from job_boards.linkedin import fetch_linkedin_posts
-from scoring.oa_models import extract_reqs
+from scoring.prompt_extraction import check_and_extract
 from scoring.job_posts import score_job_posts, identify_resume_gaps
 
 logging.basicConfig(
@@ -90,7 +90,7 @@ def run_workflow(resume: str, prompt: str) -> None:
         None
     """\
     
-    search_data = extract_reqs(prompt)
+    search_data = check_and_extract(prompt)
     search_data.resume = resume
     query_d = {
         "keywords": search_data.keywords,

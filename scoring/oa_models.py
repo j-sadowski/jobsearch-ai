@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
-from datamodels.models import WorkflowReqs
+from datamodels.models import SearchExtract, WorkflowReqs
 
 logging.basicConfig(
     level=logging.INFO,
@@ -34,6 +34,23 @@ class JDScore(BaseModel):
     score: float = Field(description="Resume suitability score")
     explanation: str = Field(description="Explanation of suitability score")
 
+def check_search_prompt(prompt: str) -> SearchExtract:
+    logger.info("Checking prompt validity")
+    completion = client.beta.chat.completions.parse(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Analyze if the text contains information for a job search query (keywords, city, optional limit, optional hybrid status)",
+                },
+                {"role": "user", "content": prompt},
+            ],
+            response_format=SearchExtract,
+            temperature=1.0
+        )
+    result = completion.choices[0].message.parsed
+    logger.info("Check complete!")
+    return result
 
 def extract_reqs(prompt: str) -> WorkflowReqs:
     logger.info("Starting prompt extraction")
