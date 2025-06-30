@@ -91,7 +91,6 @@ def run_workflow(resume: str, prompt: str) -> None:
     """\
     
     search_data = extract_reqs(prompt)
-    return
     search_data.resume = resume
     query_d = {
         "keywords": search_data.keywords,
@@ -112,7 +111,7 @@ def run_workflow(resume: str, prompt: str) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="LLM based job searches given a prompt")
     parser.add_argument("-r", "--resume_path", type=Path, help="Path to local resume, currently only .txt format", required=True)
-    parser.add_argument("-p", "--prmopt", type=str, help="The LLM prompt", required=True)
+    parser.add_argument("-p", "--prompt", type=str, help="The LLM prompt", required=True)
     args = parser.parse_args()
 
     logger.info(f"Reading resume from {args.resume_path}")

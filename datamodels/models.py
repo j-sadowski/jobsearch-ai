@@ -19,6 +19,6 @@ class JobInfo(BaseModel):
     location: str = Field(description="Location")
     work_type: Optional[str] = Field(description="OnSite/Remote/Hybrid status", default="Remote")
     posted_at: str = Field(description="Posting date")
-    score: Optional[float] = Field(description="Assigned score by LLM")
-    explanation: Optional[str] = Field(description="Short explanation as to why the score was given") 
+    score: Optional[float] = Field(description="Assigned score by LLM", default=0)
+    explanation: Optional[str] = Field(description="Short explanation as to why the score was given", default="None") 
 
