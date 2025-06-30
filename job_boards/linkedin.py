@@ -5,7 +5,7 @@ from typing import List
 from dotenv import load_dotenv
 from apify_client import ApifyClient
 
-from datamodels.models import JobInfo
+from datamodels.models import JobInfo, WorkflowReqs
 
 load_dotenv()
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 client = ApifyClient(token=os.getenv("APIFY_API_KEY"))
 
 
-def fetch_linkedin_posts(job_title: str, city: str, limit=5, hybrid=False) -> List[JobInfo]:
+def fetch_linkedin_posts(search_data: WorkflowReqs) -> List[JobInfo]:
     """
     Fetches job postings from LinkedIn using the Apify LinkedIn Jobs Scraper API.
 
@@ -33,11 +33,11 @@ def fetch_linkedin_posts(job_title: str, city: str, limit=5, hybrid=False) -> Li
     """
     run_input = {
         "date_posted": "week", # only show results from last week
-        "keywords": job_title,
-        "limit": limit,
-        "location": city,
+        "keywords": search_data.keywords,
+        "limit": search_data.limit,
+        "location": search_data.city,
     }
-    if hybrid:
+    if search_data.hybrid:
         run_input["remote"] = "hybrid"
     run = client.actor("apimaestro/linkedin-jobs-scraper-api").call(run_input=run_input)
     
