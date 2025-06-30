@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 import json
 import logging
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 from datamodels.models import JobInfo
 from job_boards.linkedin import fetch_linkedin_posts
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 CACHE_DIR = Path.cwd() / "data/cache"
 CACHE_DIR.mkdir(exist_ok=True)
 
-def cache_data(scores: List[JobInfo], gap_summary: str) -> None:
+def cache_data(query_metadata: Dict[str, str], scores: List[JobInfo], gap_summary: str) -> None:
     """
     Saves all data to a cache file.
     Args:
@@ -35,6 +35,7 @@ def cache_data(scores: List[JobInfo], gap_summary: str) -> None:
     sorted_jobs = sorted(scores, key=lambda x: x.score, reverse=True)
     jobs_d = {
         "query_date": dt_string,
+        "query_params": query_metadata,
         "jobs": [x.model_dump() for x in sorted_jobs],
         "areas_of_improvement": gap_summary
     }
@@ -87,6 +88,11 @@ def run_workflow(resume: str, job_title: str, city: str, limit: int, hybrid:bool
     Returns:
         None
     """
+    query_d = {
+        "keywords": job_title,
+        "city": city,
+        "hybrid": hybrid
+    }
     job_postings = fetch_linkedin_posts(job_title, city, limit=limit, hybrid=hybrid)
     if len(job_postings) == 0:
         logger.error("No job posts were returned from fetch. Exiting.")
@@ -94,7 +100,7 @@ def run_workflow(resume: str, job_title: str, city: str, limit: int, hybrid:bool
     scores = score_job_posts(resume, job_postings)
     gap_summary = identify_resume_gaps(scores)
     display_output(scores, gap_summary, top_n=5)
-    cache_data(scores, gap_summary)
+    cache_data(query_d, scores, gap_summary)
     logger.info("Script complete")
 
 if __name__ == "__main__":
