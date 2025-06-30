@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
+from datamodels.models import SearchExtract, WorkflowReqs
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -31,6 +33,44 @@ class JDScore(BaseModel):
     """Second LLM call score the JD against the resume"""
     score: float = Field(description="Resume suitability score")
     explanation: str = Field(description="Explanation of suitability score")
+
+def check_search_prompt(prompt: str) -> SearchExtract:
+    logger.info("Checking prompt validity")
+    completion = client.beta.chat.completions.parse(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Analyze if the text contains information for a job search query (keywords, city, optional limit, optional hybrid status)",
+                },
+                {"role": "user", "content": prompt},
+            ],
+            response_format=SearchExtract,
+            temperature=1.0
+        )
+    result = completion.choices[0].message.parsed
+    logger.info("Check complete!")
+    return result
+
+def extract_reqs(prompt: str) -> WorkflowReqs:
+    logger.info("Starting prompt extraction")
+    completion = client.beta.chat.completions.parse(
+        model=model,
+        messages=[
+            {
+                "role": "system",
+                "content": "Extract keywords to search, the city to search in, and optional hybrid / limit parameters",
+            },
+            {"role": "user", "content": prompt},
+        ],
+        response_format=WorkflowReqs,
+        temperature=0.0
+    )
+    result = completion.choices[0].message.parsed
+    logger.info("Extraction complete!")
+    print(result)
+    return result
+
 
 
 def resume_summarizer(resume: str) -> ResumeDigest:
