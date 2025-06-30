@@ -15,7 +15,10 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-model = "gpt-4.1-nano-2025-04-14" # Smallest, cheapest for prototyping
+# model = "gpt-4.1-nano-2025-04-14" #$0.10 per mil Smallest, cheapest for prototyping
+model = "gpt-4.1-mini-2025-04-14" #$0.40 per mil
+# model = "gpt-4.1-2025-04-14" #$2.00 per million
+
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
