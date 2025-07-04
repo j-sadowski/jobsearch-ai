@@ -1,6 +1,7 @@
 # jobsearch-ai
 
 `jobsearch-ai` is a command-line tool that uses large language models (LLMs) to automate and enhance the job search process. It fetches job postings from LinkedIn, scores them against your resume using AI, and helps you identify the best matches.
+Inspired by an agentic job search [repo](https://github.com/Husseinjd/job-search-2.0).
 
 
 ## Application Workflow
@@ -9,6 +10,7 @@
 
 ## Features
 
+- LLM extracts the job title and other parameters needed for fetch
 - Fetches job postings from LinkedIn based on job title and city.
 - Uses LLMs to evaluate and score how well your resume matches each job posting.
 - Provides explanations for each score to help you understand your fit.
@@ -50,22 +52,20 @@ Prepare your resume as a plain text file (e.g., `resume.txt`).
 Run the tool from the command line:
 
 ```sh
-python main.py -r resume.txt -j "Data Scientist (AI)" -c "Austin" -l 10 --hybrid
+python main.py -r resume.txt -p "Search for Data Scientist jobs in Austin, limit 10"
 ```
 
 ### Arguments
 
 - `-r, --resume_path` (required): Path to your resume in `.txt` format.
-- `-j, --job_title` (required): The job title to search for.
-- `-c, --city`: City to search for jobs (default: Austin).
-- `-l, --limit`: Maximum number of job postings to fetch (default: 10).
-- `--hybrid`: Include hybrid/remote jobs in the search.
+- `-p, --prompt` (required): A prompt detailing keywords, city, optional hybrid status, and optional limit.
 
 ## Project Structure
 
 ```
 jobsearch-ai/
 ├── main.py                # Entry point for the CLI tool
+├── eval_cache.py          # Tool for testing reproducibility logic
 ├── job_boards/
 │   └── linkedin.py        # LinkedIn job fetching logic
 ├── scoring/
