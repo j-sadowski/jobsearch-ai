@@ -133,7 +133,6 @@ def score_resume(resume_text: str, job_description: str) -> JDScore:
         f"Job Description:\n---\n{job_description}\n---\n\n"
         "Score this resume against the job description (0-10)."
     )
-    print(user_prompt)
     try:
         response = chat(
             model=model,
