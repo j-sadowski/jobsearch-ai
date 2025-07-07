@@ -1,12 +1,25 @@
-# jobsearch-ai/config.py
+import logging
 import os
+
 from dotenv import load_dotenv
 
-load_dotenv() # Loads variables from .env file
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger(__name__)
 
-AI_BACKEND = os.getenv("AI_BACKEND", "openai").lower() # Default to 'openai'
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") # Load the API key here
 
+load_dotenv()
+
+AI_BACKEND = os.getenv("AI_BACKEND", "openai").lower()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+APIFY_API_KEY = os.getenv("APIFY_API_KEY")
 
 if AI_BACKEND == "openai" and not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY environment variable not set, but OpenAI backend selected.")
+if not APIFY_API_KEY:
+    raise ValueError("APIFY_API_KEY environment variable not set.")
+
+logger.info(f"Using AI backend: {AI_BACKEND}")
