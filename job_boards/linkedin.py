@@ -1,17 +1,20 @@
 import logging
-import os
 from typing import List
 
-from dotenv import load_dotenv
 from apify_client import ApifyClient
 
+from config import APIFY_API_KEY
 from datamodels.models import JobInfo, WorkflowReqs
 
-load_dotenv()
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
-client = ApifyClient(token=os.getenv("APIFY_API_KEY"))
+client = ApifyClient(token=APIFY_API_KEY)
 
 
 def fetch_linkedin_posts(search_data: WorkflowReqs) -> List[JobInfo]:

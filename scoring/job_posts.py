@@ -1,7 +1,14 @@
 import logging
 from typing import List
 
-from .oa_models import score_resume, summarize_gaps
+from config import AI_BACKEND
+if AI_BACKEND == "openai":
+    from .oa_models import score_resume, summarize_gaps
+elif AI_BACKEND == "ollama":
+    from .ollama_models import score_resume, summarize_gaps
+else:
+    raise ValueError(f"Unknown AI_BACKEND: {AI_BACKEND}. Must be 'ollama' or 'openai'.")
+
 from datamodels.models import JobInfo
 
 
@@ -31,7 +38,7 @@ def score_job_posts(resume: str, job_postings: List[JobInfo]) -> List[JobInfo]:
     logger.info(f"Starting resume scorer. Submitting {len(job_postings)} jobs")
     scores = []
     for i, job in enumerate(job_postings):
-        logger.info(f"Submitting job {i} of {len(job_postings)}")
+        logger.info(f"Submitting job {i + 1} of {len(job_postings)}")
         job_score = score_resume(resume, job.description)
         job.score = job_score.score
         job.explanation = job_score.explanation

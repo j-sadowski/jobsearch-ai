@@ -1,10 +1,9 @@
 import logging
 from typing import List
 
-from openai import OpenAI
+from ollama import chat
 from pydantic import BaseModel, Field
 
-from config import OPENAI_API_KEY
 from datamodels.models import SearchExtract, WorkflowReqs
 
 logging.basicConfig(
@@ -14,12 +13,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# model = "gpt-4.1-nano-2025-04-14" #$0.10 per mil Smallest, cheapest for prototyping
-model = "gpt-4.1-mini-2025-04-14" #$0.40 per mil
-# model = "gpt-4.1-2025-04-14" #$2.00 per million
-
-client = OpenAI(api_key=OPENAI_API_KEY)
-
+model = "gemma3:1b"
 
 # TODO: Move pydtantic models out of here.
 class ResumeDigest(BaseModel):
@@ -33,37 +27,38 @@ class JDScore(BaseModel):
 
 def check_search_prompt(prompt: str) -> SearchExtract:
     logger.info("Checking prompt validity")
-    completion = client.beta.chat.completions.parse(
+    prompt = f"Does the following sentence include job search keywords (job title, city, number of results)?: {prompt}"
+    completion = chat(
             model=model,
             messages=[
                 {
                     "role": "system",
-                    "content": "Analyze if the text contains information for a job search query (keywords, city, optional limit, optional hybrid status)",
+                    "content": "You are a helpful assistant designed to validate job search prompts for relevance and data quality.  Your task is to analyze the prompt to determine if it contains keywords indicative of a job search query, a city, and optionally a hybrid status. Respond with a boolean indicating the presence of these elements, a confidence score, and a concise explanation supporting the confidence score"
                 },
                 {"role": "user", "content": prompt},
             ],
-            response_format=SearchExtract,
-            temperature=1.0
+            format=SearchExtract.model_json_schema(),
+            options={"temperature": 0.0},
         )
-    result = completion.choices[0].message.parsed
+    result = SearchExtract.model_validate_json(completion.message.content)
     logger.info("Check complete!")
     return result
 
 def extract_reqs(prompt: str) -> WorkflowReqs:
     logger.info("Starting prompt extraction")
-    completion = client.beta.chat.completions.parse(
+    completion = chat(
         model=model,
         messages=[
             {
                 "role": "system",
-                "content": "Extract keywords to search, the city to search in, and optional hybrid / limit parameters",
+                "content": "You are a helpful assistant designed to extract job search information from the prompt.  Your task is to analyze the prompt and extract: a job title, a city, optionally a limit on results and optionally a hybrid status. You are FORBIDDEN from filling in the resume field.",
             },
             {"role": "user", "content": prompt},
         ],
-        response_format=WorkflowReqs,
-        temperature=0.0
+        format=WorkflowReqs.model_json_schema(),
+        options={"temperature": 0},
     )
-    result = completion.choices[0].message.parsed
+    result = WorkflowReqs.model_validate_json(completion.message.content)
     logger.info("Extraction complete!")
     print(result)
     return result
@@ -90,7 +85,7 @@ def resume_summarizer(resume: str) -> ResumeDigest:
     logger.info("Starting resume summarizer")
     
 
-    completion = client.beta.chat.completions.parse(
+    completion = chat(
         model=model,
         messages=[
             {
@@ -99,9 +94,9 @@ def resume_summarizer(resume: str) -> ResumeDigest:
             },
             {"role": "user", "content": resume},
         ],
-        response_format=ResumeDigest,
+        format=ResumeDigest.model_json_schema(),
     )
-    result = completion.choices[0].message.parsed
+    result = ResumeDigest.model_validate_json(completion.message.content)
     logger.info("Summary complete!")
     print(result.summary)
     return result
@@ -128,28 +123,28 @@ def score_resume(resume_text: str, job_description: str) -> JDScore:
         "You are an expert resume evaluator. Your task is to score a resume's suitability "
         "for a given job description on a scale of 0 to 10. "
         "A score of 10 indicates a perfect fit, and 0 indicates no fit. "
+        "Be harsh but fair. "
         "Consider all aspects: skills, experience, qualifications, and alignment with the role's responsibilities. "
-        "Provide the numerical score as an float and a short explanation."
+        "Provide the numerical score as an float and a short explanation (<100 words)."
     )
 
     user_prompt = (
         f"Resume:\n---\n{resume_text}\n---\n\n"
         f"Job Description:\n---\n{job_description}\n---\n\n"
-        "Score this resume against the job description (0-10):"
+        "Score this resume against the job description (0-10)."
     )
-
     try:
-        response = client.beta.chat.completions.parse(
+        response = chat(
             model=model,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            temperature=0.0,
-            response_format=JDScore
+            options={"temperature": 0},
+            format=JDScore.model_json_schema()
         )
         logger.info("Resume scoring successful!")
-        result = response.choices[0].message.parsed
+        result = JDScore.model_validate_json(response.message.content)
     except Exception as e:
         logger.error(f"Failed to score resume: {e}")
         result = JDScore(score=-1, explanation="Comparison failed")
@@ -192,16 +187,16 @@ def summarize_gaps(explanations: List[str]) -> str:
     )
     
     try:
-        response = client.chat.completions.create(
+        response = chat(
             model=model,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            temperature=0.0
+            options={"temperature": 0},
         )
         logger.info("Gap summarizaton complete")
-        result = response.choices[0].message.content
+        result = response["message"]["content"]
     except Exception as e:
         logger.error(f"Failed to identify gaps resume: {e}")
         result = f"Unable to analyze gaps: {e}"

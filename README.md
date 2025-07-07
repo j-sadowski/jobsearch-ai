@@ -1,7 +1,10 @@
 # jobsearch-ai
 
-`jobsearch-ai` is a command-line tool that uses large language models (LLMs) to automate and enhance the job search process. It fetches job postings from LinkedIn, scores them against your resume using AI, and helps you identify the best matches.
-Inspired by an agentic job search [repo](https://github.com/Husseinjd/job-search-2.0).
+`jobsearch-ai` is a command-line tool that uses large language models (LLMs) to automate and enhance the job search process. It fetches job postings from LinkedIn, scores them against your resume using AI, and helps you identify the best matches.  
+Inspired by an agentic job search [repo](https://github.com/Husseinjd/job-search-2.0).  
+
+If you are interested in using the Ollama backend, make sure you have Ollama installed and the proper model specified.
+
 
 
 ## Application Workflow
@@ -39,8 +42,9 @@ Inspired by an agentic job search [repo](https://github.com/Husseinjd/job-search
     pip install -r requirements.txt
     ```
 
-3. Set your OpenAI API key in a `.env` file:
+3. Set your up `.env` file:
     ```
+    AI_BACKEND=either "openai" or "ollama"
     OPENAI_API_KEY=your_openai_api_key_here
     APIFY_API_KEY=your_apify_api_key_here
     ```
@@ -65,11 +69,13 @@ python main.py -r resume.txt -p "Search for Data Scientist jobs in Austin, limit
 ```
 jobsearch-ai/
 ├── main.py                # Entry point for the CLI tool
+├── config.py              # Loads environment variables and configures logging
 ├── eval_cache.py          # Tool for testing reproducibility logic
 ├── job_boards/
 │   └── linkedin.py        # LinkedIn job fetching logic
 ├── scoring/
 │   ├── job_posts.py       # Job scoring logic
+|   ├── ollama_models.py   # Ollama code
 │   └── oa_models.py       # LLM interaction and scoring models
 ├── datamodels/
 │   └── models.py          # Data models for job postings
