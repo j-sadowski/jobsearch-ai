@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict, List
 
 from datamodels.models import JobInfo
-from job_boards.linkedin import fetch_linkedin_posts
+from job_boards.apify import fetch_posts
 from scoring.prompt_extraction import check_and_extract
 from scoring.job_posts import score_job_posts, identify_resume_gaps
 
@@ -73,7 +73,7 @@ def run_workflow(resume: str, prompt: str) -> None:
     Executes the main workflow for job searching and evaluation.
 
     Steps:
-        1. Fetches LinkedIn job postings that match the specified job title and city.
+        1. Fetches job postings that match the specified job title and city.
            If 'hybrid' is True, only hybrid jobs in the search.
         2. Compares each job posting against the provided resume, assigning a score and reason.
         3. Summarize gaps in jobs > 7 that would improve resume
@@ -97,7 +97,7 @@ def run_workflow(resume: str, prompt: str) -> None:
         "city": search_data.city,
         "hybrid": search_data.hybrid
     }
-    job_postings = fetch_linkedin_posts(search_data)
+    job_postings = fetch_posts(search_data)
     if len(job_postings) == 0:
         logger.error("No job posts were returned from fetch. Exiting.")
         return

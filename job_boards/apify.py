@@ -17,11 +17,11 @@ logging.basicConfig(
 client = ApifyClient(token=APIFY_API_KEY)
 
 
-def fetch_linkedin_posts(search_data: WorkflowReqs) -> List[JobInfo]:
+def fetch_posts(search_data: WorkflowReqs) -> List[JobInfo]:
     """
-    Fetches job postings from LinkedIn using the Apify LinkedIn Jobs Scraper API.
+    Fetches job postings using APIFY Jobs Scraper API.
 
-    This function queries LinkedIn for job postings that match the specified job title and city.
+    This function queries APIFY for job postings that match the specified job title and city.
     It returns a list of JobInfo objects containing details about each job. Optionally, it can filter
     for hybrid/remote jobs.
 
