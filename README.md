@@ -1,6 +1,6 @@
 # jobsearch-ai
 
-`jobsearch-ai` is a command-line tool that uses large language models (LLMs) to automate and enhance the job search process. It fetches job postings from LinkedIn, scores them against your resume using AI, and helps you identify the best matches.  
+`jobsearch-ai` is a command-line tool that uses large language models (LLMs) to automate and enhance the job search process. It fetches job postings from Apify, scores them against your resume using AI, and helps you identify the best matches.  
 Inspired by an agentic job search [repo](https://github.com/Husseinjd/job-search-2.0).  
 
 If you are interested in using the Ollama backend, make sure you have Ollama installed and the proper model specified.
@@ -14,7 +14,7 @@ If you are interested in using the Ollama backend, make sure you have Ollama ins
 ## Features
 
 - LLM extracts the job title and other parameters needed for fetch
-- Fetches job postings from LinkedIn based on job title and city.
+- Fetches job postings from Apify based on job title and city.
 - Uses LLMs to evaluate and score how well your resume matches each job posting.
 - Provides explanations for each score to help you understand your fit.
 - Summarizes missing skills or experiences to help you improve your resume.
@@ -72,7 +72,7 @@ jobsearch-ai/
 ├── config.py              # Loads environment variables and configures logging
 ├── eval_cache.py          # Tool for testing reproducibility logic
 ├── job_boards/
-│   └── linkedin.py        # LinkedIn job fetching logic
+│   └── apify.py        # job fetching logic
 ├── scoring/
 │   ├── job_posts.py       # Job scoring logic
 |   ├── ollama_models.py   # Ollama code
